@@ -3,7 +3,7 @@ from src.db.connection import get_db
 from src.users.model import User
 from sqlalchemy.orm import Session
 from src.scheme.user import CreateUser, UserResponse, UserLogin
-from src.auth.security import hash_password, verify_password
+from src.auth.security import hash_password, verify_password , create_access_token
 
 
 app = FastAPI()
@@ -43,9 +43,11 @@ def login(user: UserLogin,db: Session = Depends(get_db)):
             detail="Incorrect password"
         )
 
+    token = create_access_token({
+        "user_id": existing_user.id
+    })
+
     return {
-        "message": "Login successful",
-        "user_id": existing_user.id,
-        "name": existing_user.name,
-        "email": existing_user.email
+        "access_token": token,
+        "token_type": "bearer"
     }
