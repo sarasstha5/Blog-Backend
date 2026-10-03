@@ -7,6 +7,7 @@ class CreatePost(BaseModel):
     title: str
     content: str
     category_id: int | None = None
+    tag_ids: list[int]
 
 
 class UpdatePost(BaseModel):

@@ -1,13 +1,12 @@
-from fastapi import Depends, HTTPException
+from fastapi import HTTPException,Depends
 from src.db.connection import get_db
-from src.scheme.catogeries import CategoryCreate, CategoryResponse
+from src.scheme.catogeries import CategoryCreate
 from sqlalchemy.orm import Session
 from src.catogeries.model import Category
 
 
-
-def create_category( data: CategoryCreate, db: Session = Depends(get_db)):
-    new_category = CategoryCreate(**data.dict())
+def create_category(data: CategoryCreate, db: Session):
+    new_category = Category(name=data.name)
     db.add(new_category)
     db.commit()
     db.refresh(new_category)
