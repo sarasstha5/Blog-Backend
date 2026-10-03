@@ -8,6 +8,7 @@ from src.users import controller
 router = APIRouter(prefix="/users")
 admin_router = APIRouter(
     prefix="/admin/users",
+    tags=["Admin Users"],
     dependencies=[Depends(require_admin)],
 )
 

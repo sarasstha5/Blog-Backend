@@ -6,6 +6,7 @@ from pydantic import BaseModel
 class CreatePost(BaseModel):
     title: str
     content: str
+    category_id: int | None = None
 
 
 class UpdatePost(BaseModel):
@@ -18,6 +19,7 @@ class PostResponse(BaseModel):
     title: str
     content: str
     author_id: int
+    category_id: int | None
     created_at: datetime
     updated_at: datetime
 

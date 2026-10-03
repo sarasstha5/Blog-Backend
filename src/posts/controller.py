@@ -1,16 +1,26 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
+from src.catogeries.model import Category
 from src.posts.model import Post
 from src.scheme.post import CreatePost, UpdatePost
 from src.users.model import User
 
 
 def create_post(db: Session, data: CreatePost, author_id: int):
+    if data.category_id is not None:
+        category = db.query(Category).filter(Category.id == data.category_id).first()
+        if category is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Category not found",
+            )
+
     post = Post(
         title=data.title,
         content=data.content,
         author_id=author_id,
+        category_id=data.category_id,
     )
     db.add(post)
     db.commit()
