@@ -5,6 +5,7 @@ from src.auth.security import verify_token
 from src.db.connection import get_db
 from src.posts import controller
 from src.scheme.post import CreatePost, PostResponse, UpdatePost
+from src.users.model import User
 
 router = APIRouter(prefix="/posts")
 
@@ -13,15 +14,15 @@ router = APIRouter(prefix="/posts")
 def create_post(
     data: CreatePost,
     db: Session = Depends(get_db),
-    token_data: dict = Depends(verify_token),
+    user: User = Depends(verify_token),
 ):
-    return controller.create_post(db, data, token_data["user_id"])
+    return controller.create_post(db, data, user.id)
 
 
 @router.get("/", response_model=list[PostResponse])
 def get_posts(
     db: Session = Depends(get_db),
-    _token_data: dict = Depends(verify_token),
+    _user: User = Depends(verify_token),
 ):
     return controller.get_posts(db)
 
@@ -30,7 +31,7 @@ def get_posts(
 def get_post(
     post_id: int,
     db: Session = Depends(get_db),
-    _token_data: dict = Depends(verify_token),
+    _user: User = Depends(verify_token),
 ):
     return controller.get_post(db, post_id)
 
@@ -40,15 +41,15 @@ def update_post(
     post_id: int,
     data: UpdatePost,
     db: Session = Depends(get_db),
-    token_data: dict = Depends(verify_token),
+    user: User = Depends(verify_token),
 ):
-    return controller.update_post(db, post_id, data, token_data["user_id"])
+    return controller.update_post(db, post_id, data, user)
 
 
 @router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(
     post_id: int,
     db: Session = Depends(get_db),
-    token_data: dict = Depends(verify_token),
+    user: User = Depends(verify_token),
 ):
-    controller.delete_post(db, post_id, token_data["user_id"])
+    controller.delete_post(db, post_id, user)
