@@ -19,10 +19,13 @@ class Post(Base):
         nullable=False
     )
 
-    created_at = Column(DateTime,default=datetime.now(timezone.utc))
+    created_at = Column(
+    DateTime,
+    default=lambda: datetime.now(timezone.utc)
+)
 
     updated_at = Column(
         DateTime,
-        default=datetime.now(timezone.utc),
-        onupdate=datetime.now(timezone.utc)
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc)
     )

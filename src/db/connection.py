@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+from config import settings
 
-DB_URL = "postgresql://postgres:1515@localhost:5432/blogdb"
+
+DB_URL = settings.DB_URL
 engine = create_engine(DB_URL)
 SessionLocal = sessionmaker(bind=engine)
 Base = declarative_base()

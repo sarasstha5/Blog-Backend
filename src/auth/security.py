@@ -1,16 +1,12 @@
 from fastapi import Depends, HTTPException, status
 from pwdlib import PasswordHash
-import os
 from datetime import datetime, timedelta, timezone
 from jose import jwt
 from jose.exceptions import JWTError
-from dotenv import load_dotenv
 from fastapi.security import OAuth2PasswordBearer
+from config import settings
 
 
-
-
-load_dotenv()
 
 password_hasher = PasswordHash.recommended()
 
@@ -21,10 +17,10 @@ def verify_password(password: str, hashed_password: str):
     return password_hasher.verify(password, hashed_password)
 
 # JWT Token generation and verification
-SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
+SECRET_KEY = settings.SECRET_KEY
+ALGORITHM = settings.ALGORITHM
 ACCESS_TOKEN_EXPIRE_MINUTES = int(
-    os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30)
+    settings.ACCESS_TOKEN_EXPIRE_MINUTES
 )
 
 
