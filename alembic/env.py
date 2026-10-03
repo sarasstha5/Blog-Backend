@@ -8,6 +8,7 @@ from alembic import context
 from src.db.connection import Base
 from src.users.model import User
 from src.posts.model import Post
+from src.catogeries.model import Category
 from config import settings
 
 # this is the Alembic Config object, which provides
