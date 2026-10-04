@@ -9,8 +9,10 @@ from src.db.connection import Base
 from src.users.model import User
 from src.posts.model import Post
 from src.catogeries.model import Category
-from tags.model import Tag
-from tags.association import post_tags
+from src.tags.model import Tag
+from src.tags.association import post_tags
+from src.comment.model import Comment
+from src.likes.association import post_likes
 from config import settings
 
 # this is the Alembic Config object, which provides
