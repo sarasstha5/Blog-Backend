@@ -81,8 +81,10 @@ def update_post(db: Session, post_id: int, data: UpdatePost, user: User):
             detail="A post with this title already exists",
         )
 
+    tags = db.query(Tag).filter(Tag.id.in_(data.tag_ids)).all()
     post.title = data.title
     post.content = data.content
+    post.tags = tags
     db.commit()
     db.refresh(post)
     return post

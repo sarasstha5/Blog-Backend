@@ -13,6 +13,7 @@ class CreatePost(BaseModel):
 class UpdatePost(BaseModel):
     title: str
     content: str
+    tag_ids: list[int]
 
 
 class PostResponse(BaseModel):
