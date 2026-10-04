@@ -1,6 +1,6 @@
 
 from sqlalchemy import Column, Integer, String, Boolean
-
+from sqlalchemy.orm import relationship
 from src.db.connection import Base
 
 
@@ -13,3 +13,4 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     is_active = Column(Boolean, default=True)
     role = Column(String(20), default="user", nullable=False, server_default="user")
+    comments = relationship("Comment", back_populates="user")
