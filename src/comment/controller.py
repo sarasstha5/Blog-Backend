@@ -19,10 +19,12 @@ def create_comment(data: CommentCreate,db: Session, current_user):
     return comment
 
 #get comment
-def get_comments(post_id: int,db: Session ):
+def get_comments(post_id: int,page: int,db: Session ):
+    limit = 10
+    skip = (page - 1) * limit
     comments = db.query(Comment).filter(
         Comment.post_id == post_id
-    ).all()
+    ).offset(skip).limit(limit).all()
 
     return comments
 

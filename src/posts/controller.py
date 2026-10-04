@@ -6,6 +6,7 @@ from src.posts.model import Post
 from src.scheme.post import CreatePost, UpdatePost
 from src.tags.model import Tag
 from src.users.model import User
+from  fastapi import Query
 
 def create_post(db: Session, data: CreatePost, author_id: int):
     existing_post = db.query(Post).filter(Post.title == data.title).first()
@@ -42,9 +43,11 @@ def create_post(db: Session, data: CreatePost, author_id: int):
     db.refresh(post)
     return post
 
-
-def get_posts(db: Session):
-    return db.query(Post).all()
+#get post
+def get_posts(db: Session, page):
+    limit = 10
+    skip = (page - 1) * limit                             
+    return db.query(Post).offset(skip).limit(limit).all()
 
 
 def get_post(db: Session, post_id: int):

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from src.db.connection import get_db
@@ -12,13 +12,18 @@ router = APIRouter(
     tags=["Comments"]
 )
 
-@router.post("/",response_model=CommentResponse)
+@router.post("/", response_model=CommentResponse)
 def create(data: CommentCreate,db: Session = Depends(get_db),current_user=Depends(verify_token)):
     return controller.create_comment(data,db,current_user)
 
-@router.post("/post/{post_id}",response_model=CommentResponse)
-def create(data: CommentCreate,post_id,db: Session = Depends(get_db)):
-    return controller.get_comment(post_id,db,)
+
+@router.get("/post/{post_id}", response_model=list[CommentResponse])
+def get_comments(
+    post_id: int,
+    page: int = Query(1, ge=1),
+    db: Session = Depends(get_db),
+):
+    return controller.get_comments(post_id, page, db)
 
 @router.put(
     "/{comment_id}",

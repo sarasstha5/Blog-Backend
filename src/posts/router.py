@@ -6,6 +6,7 @@ from src.db.connection import get_db
 from src.posts import controller
 from src.scheme.post import CreatePost, PostResponse, UpdatePost
 from src.users.model import User
+from fastapi import Query
 
 router = APIRouter(prefix="/posts")
 
@@ -22,9 +23,9 @@ def create_post(
 @router.get("/", response_model=list[PostResponse])
 def get_posts(
     db: Session = Depends(get_db),
-    _user: User = Depends(verify_token),
+    page:int = Query(1, ge=1)
 ):
-    return controller.get_posts(db)
+    return controller.get_posts(db, page)
 
 
 @router.get("/{post_id}", response_model=PostResponse)
