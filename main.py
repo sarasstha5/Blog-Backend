@@ -3,7 +3,7 @@ from src.db.connection import Base,engine
 from src.users.router import admin_router, router as user_router
 from src.posts.router import router as post_router
 from src.catogeries.router import router as category_router
-from tags.router import router as tag_router
+from src.tags.router import router as tag_router
 
 
 app = FastAPI()

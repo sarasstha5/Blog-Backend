@@ -4,10 +4,17 @@ from sqlalchemy.orm import Session
 from src.catogeries.model import Category
 from src.posts.model import Post
 from src.scheme.post import CreatePost, UpdatePost
+from src.tags.model import Tag
 from src.users.model import User
 
-
 def create_post(db: Session, data: CreatePost, author_id: int):
+    existing_post = db.query(Post).filter(Post.title == data.title).first()
+    if existing_post is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="A post with this title already exists",
+        )
+
     if data.category_id is not None:
         category = db.query(Category).filter(Category.id == data.category_id).first()
         if category is None:
@@ -16,12 +23,20 @@ def create_post(db: Session, data: CreatePost, author_id: int):
                 detail="Category not found",
             )
 
+    tags = db.query(Tag).filter(Tag.id.in_(data.tag_ids)).all()
+    if len(tags) != len(set(data.tag_ids)):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="One or more tags not found",
+        )
+
     post = Post(
         title=data.title,
         content=data.content,
         author_id=author_id,
         category_id=data.category_id,
     )
+    post.tags = tags
     db.add(post)
     db.commit()
     db.refresh(post)
@@ -53,6 +68,17 @@ def update_post(db: Session, post_id: int, data: UpdatePost, user: User):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You can only update your own posts",
+        )
+
+    existing_post = (
+        db.query(Post)
+        .filter(Post.title == data.title, Post.id != post_id)
+        .first()
+    )
+    if existing_post is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="A post with this title already exists",
         )
 
     post.title = data.title

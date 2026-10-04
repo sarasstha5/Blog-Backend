@@ -1,5 +1,7 @@
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
 from datetime import datetime,timezone
+from sqlalchemy.orm import relationship
+from src.tags.association import post_tags
 
 from src.db.connection import Base
 
@@ -28,3 +30,9 @@ class Post(Base):
         Integer,
         ForeignKey("categories.id", name="fk_posts_category_id_categories"),
     )
+
+    tags = relationship("Tag",secondary=post_tags,back_populates="posts")
+
+    @property
+    def tag_ids(self) -> list[int]:
+        return [tag.id for tag in self.tags]

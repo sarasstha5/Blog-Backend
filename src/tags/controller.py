@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from src.scheme.tags import TagCreate
-from tags.model import Tag
+from src.tags.model import Tag
 
 
 def create_tag(db: Session, data: TagCreate):

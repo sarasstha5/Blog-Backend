@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from src.auth.security import require_admin
 from src.db.connection import get_db
 from src.scheme.tags import TagCreate, TagResponse
-from tags import controller
+from src.tags import controller
 
 router = APIRouter(
     prefix="/admin/tags",

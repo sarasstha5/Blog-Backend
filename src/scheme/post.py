@@ -21,6 +21,7 @@ class PostResponse(BaseModel):
     content: str
     author_id: int
     category_id: int | None
+    tag_ids: list[int]
     created_at: datetime
     updated_at: datetime
 
