@@ -22,10 +22,12 @@ def create_post(
 
 @router.get("/", response_model=list[PostResponse])
 def get_posts(
+    search: str | None = None,
+    category: str | None = None,
     db: Session = Depends(get_db),
     page:int = Query(1, ge=1)
 ):
-    return controller.get_posts(db, page)
+    return controller.get_posts(search,category,db, page)
 
 
 @router.get("/{post_id}", response_model=PostResponse)

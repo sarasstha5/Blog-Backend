@@ -33,4 +33,10 @@ class Post(Base):
 
     tags = relationship("Tag",secondary=post_tags,back_populates="posts")
 
+    category = relationship("Category", back_populates="posts")
+
     comments = relationship("Comment", back_populates="post")
+
+    @property
+    def tag_ids(self):
+        return [tag.id for tag in self.tags]

@@ -1,12 +1,11 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-
+from sqlalchemy import or_
 from src.catogeries.model import Category
 from src.posts.model import Post
 from src.scheme.post import CreatePost, UpdatePost
 from src.tags.model import Tag
 from src.users.model import User
-from  fastapi import Query
 
 def create_post(db: Session, data: CreatePost, author_id: int):
     existing_post = db.query(Post).filter(Post.title == data.title).first()
@@ -44,10 +43,25 @@ def create_post(db: Session, data: CreatePost, author_id: int):
     return post
 
 #get post
-def get_posts(db: Session, page):
+def get_posts(search: str|None, category: str|None , db: Session, page: int):
     limit = 10
-    skip = (page - 1) * limit                             
-    return db.query(Post).offset(skip).limit(limit).all()
+    skip = (page - 1) * limit
+    query = db.query(Post)
+    if search:
+        pattern = f"%{search}%"
+        query = query.filter(
+            or_(
+                Post.title.ilike(pattern),
+                Post.content.ilike(pattern),
+            )
+        )
+
+    if category:
+        query = query.join(Post.category).filter(
+        Category.name.ilike(f"%{category}%")
+    )
+
+    return query.offset(skip).limit(limit).all()
 
 
 def get_post(db: Session, post_id: int):
