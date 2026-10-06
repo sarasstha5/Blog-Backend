@@ -37,6 +37,8 @@ class Post(Base):
 
     comments = relationship("Comment", back_populates="post")
 
+    bookmarks = relationship("Bookmark",back_populates="post")
+
     @property
     def tag_ids(self):
         return [tag.id for tag in self.tags]
