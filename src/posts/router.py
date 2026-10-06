@@ -22,8 +22,8 @@ def create_post(
 
 @router.get("/", response_model=list[PostResponse])
 def get_posts(
-    search: str | None = None,
-    category: str | None = None,
+    search: str,
+    category: str,
     db: Session = Depends(get_db),
     page:int = Query(1, ge=1)
 ):

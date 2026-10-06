@@ -43,7 +43,7 @@ def create_post(db: Session, data: CreatePost, author_id: int):
     return post
 
 #get post
-def get_posts(search: str|None, category: str|None , db: Session, page: int):
+def get_posts(search: str, category: str , db: Session, page: int):
     limit = 10
     skip = (page - 1) * limit
     query = db.query(Post)
