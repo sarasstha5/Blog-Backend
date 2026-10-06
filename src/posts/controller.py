@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
@@ -43,7 +44,15 @@ def create_post(db: Session, data: CreatePost, author_id: int):
     return post
 
 #get post
-def get_posts(search: str|None, category: str|None , sort_by:str|None ,db: Session, page: int):
+def get_posts(
+    search: str|None,
+    category: str|None , 
+    sort_by:str|None ,
+    tags:str|None,
+    year:int|None,
+    db: Session,
+    page: int):
+
     limit = 10
     skip = (page - 1) * limit
     query = db.query(Post)
@@ -65,6 +74,15 @@ def get_posts(search: str|None, category: str|None , sort_by:str|None ,db: Sessi
         query = query.order_by(Post.created_at.desc())
     elif sort_by == "oldest":
         query = query.order_by(Post.created_at.asc())
+
+    if tags:
+        query = query.join(Post.tags).filter(Tag.name.ilike(f"%{tags}%"))
+
+    if year:
+        start_date = datetime(year,1,1)
+        end_date = datetime(year+1,1,1)
+        query = query.filter(Post.created_at >= start_date, 
+                             Post.created_at < end_date)
 
 
     return query.offset(skip).limit(limit).all()
