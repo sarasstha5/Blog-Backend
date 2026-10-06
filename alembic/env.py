@@ -13,6 +13,7 @@ from src.tags.model import Tag
 from src.tags.association import post_tags
 from src.comment.model import Comment
 from src.likes.association import post_likes
+from src.Bookmark.model import Bookmark
 from config import settings
 
 # this is the Alembic Config object, which provides
