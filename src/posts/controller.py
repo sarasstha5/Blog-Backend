@@ -43,7 +43,7 @@ def create_post(db: Session, data: CreatePost, author_id: int):
     return post
 
 #get post
-def get_posts(search: str, category: str , db: Session, page: int):
+def get_posts(search: str|None, category: str|None , sort_by:str|None ,db: Session, page: int):
     limit = 10
     skip = (page - 1) * limit
     query = db.query(Post)
@@ -60,6 +60,12 @@ def get_posts(search: str, category: str , db: Session, page: int):
         query = query.join(Post.category).filter(
         Category.name.ilike(f"%{category}%")
     )
+
+    if sort_by == "latest":
+        query = query.order_by(Post.created_at.desc())
+    elif sort_by == "oldest":
+        query = query.order_by(Post.created_at.asc())
+
 
     return query.offset(skip).limit(limit).all()
 
