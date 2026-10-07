@@ -8,9 +8,9 @@ class CreateUser(BaseModel):
     is_active: bool = True
 
 
-class UserLogin(BaseModel):
-    email: str
-    password: str
+# class UserLogin(BaseModel):
+#     email: str
+#     password: str
 
 
 class UserResponse(BaseModel):

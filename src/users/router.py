@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
 from src.auth.security import require_admin
-from src.scheme.user import UserResponse, CreateUser, UserLogin
+from src.scheme.user import UserResponse, CreateUser
 from src.db.connection import get_db
 from src.users import controller
+from fastapi.security import OAuth2PasswordRequestForm
 
 router = APIRouter(prefix="/users")
 admin_router = APIRouter(
@@ -17,7 +18,8 @@ def register(user: CreateUser, db: Session = Depends(get_db)):
     return controller.register(user, db)
 
 @router.post("/login")
-def login(user: UserLogin, db: Session = Depends(get_db)):
+# def login(user: UserLogin, db: Session = Depends(get_db)):
+def login(user: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     return controller.login(user, db)
 
 #admin_router.post("/", response_model=UserResponse)

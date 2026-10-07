@@ -2,9 +2,10 @@ from fastapi import FastAPI, Depends,HTTPException
 from src.db.connection import get_db 
 from src.users.model import User
 from sqlalchemy.orm import Session
-from src.scheme.user import CreateUser, UserResponse, UserLogin
+from src.scheme.user import CreateUser
 from src.auth.security import hash_password, verify_password , create_access_token
 from src.posts.model import Post
+from fastapi.security import OAuth2PasswordRequestForm
 
 
 app = FastAPI()
@@ -29,8 +30,10 @@ def register(user: CreateUser, db: Session):
     return new_user
 
 #login
-def login(user: UserLogin,db: Session = Depends(get_db)):
-    existing_user = db.query(User).filter(User.email == user.email).first()
+# def login(user: UserLogin,db: Session = Depends(get_db)):
+def login(user,db: Session = Depends(get_db)):
+    # existing_user = db.query(User).filter(User.email == user.email).first()
+    existing_user = db.query(User).filter(User.email == user.username).first()
 
     if not existing_user:
         raise HTTPException(
