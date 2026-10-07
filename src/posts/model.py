@@ -30,6 +30,8 @@ class Post(Base):
         Integer,
         ForeignKey("categories.id", name="fk_posts_category_id_categories"),
     )
+    
+    image_url = Column(String, nullable=True)
 
     tags = relationship("Tag",secondary=post_tags,back_populates="posts")
 

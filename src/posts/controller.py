@@ -1,5 +1,5 @@
 from datetime import datetime
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status,UploadFile
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from src.catogeries.model import Category
@@ -7,8 +7,20 @@ from src.posts.model import Post
 from src.scheme.post import CreatePost, UpdatePost
 from src.tags.model import Tag
 from src.users.model import User
+from pathlib import Path
+from uuid import uuid4
 
-def create_post(db: Session, data: CreatePost, author_id: int):
+def create_post(db: Session, data: CreatePost, author_id: int,image:UploadFile|None):
+
+    UPLOAD_DIR = Path("media/post")
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+    filename = f"{uuid4().hex}_{image.filename}"
+    file_path = UPLOAD_DIR / filename
+
+    with open(file_path, "wb") as buffer:
+        buffer.write(image.file.read())
+
     existing_post = db.query(Post).filter(Post.title == data.title).first()
     if existing_post is not None:
         raise HTTPException(
@@ -36,6 +48,7 @@ def create_post(db: Session, data: CreatePost, author_id: int):
         content=data.content,
         author_id=author_id,
         category_id=data.category_id,
+        image_url = str(file_path)
     )
     post.tags = tags
     db.add(post)
