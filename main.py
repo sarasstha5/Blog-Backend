@@ -9,6 +9,7 @@ from src.likes.router import router as likes_router
 from src.catogeries.router import router as category_router
 from src.tags.router import router as tag_router
 from src.Bookmark.router import router as bookmark_router
+from src.uploadfile.router import router as uploadfile_router
 
 
 app = FastAPI()
@@ -23,3 +24,4 @@ app.include_router(admin_router)
 app.include_router(category_router)
 app.include_router(tag_router)
 app.include_router(bookmark_router)
+app.include_router(uploadfile_router)
