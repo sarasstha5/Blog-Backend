@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status,File,UploadFile,Form
 from sqlalchemy.orm import Session
 
 from src.auth.security import verify_token
@@ -13,11 +13,21 @@ router = APIRouter(prefix="/posts")
 
 @router.post("/", response_model=PostResponse, status_code=status.HTTP_201_CREATED)
 def create_post(
-    data: CreatePost,
+    title: str = Form(...),
+    content: str = Form(...),
+    category_id: int = Form(...),
+    tag_ids: list[int] = Form(...),
+    image: UploadFile = File(...),
     db: Session = Depends(get_db),
     user: User = Depends(verify_token),
 ):
-    return controller.create_post(db, data, user.id)
+    data = CreatePost(
+        title = title,
+        content=content,
+        category_id=category_id,
+        tag_ids=tag_ids,
+    )
+    return controller.create_post(db, data, user.id,image)
 
 
 @router.get("/", response_model=list[PostResponse])
