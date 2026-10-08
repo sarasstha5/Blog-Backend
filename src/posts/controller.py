@@ -7,19 +7,10 @@ from src.posts.model import Post
 from src.scheme.post import CreatePost, UpdatePost
 from src.tags.model import Tag
 from src.users.model import User
-from pathlib import Path
-from uuid import uuid4
+
+from src.uploadfile.controller import validate_image,save_image
 
 def create_post(db: Session, data: CreatePost, author_id: int,image:UploadFile|None):
-
-    UPLOAD_DIR = Path("media/post")
-    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-
-    filename = f"{uuid4().hex}_{image.filename}"
-    file_path = UPLOAD_DIR / filename
-
-    with open(file_path, "wb") as buffer:
-        buffer.write(image.file.read())
 
     existing_post = db.query(Post).filter(Post.title == data.title).first()
     if existing_post is not None:
@@ -43,12 +34,19 @@ def create_post(db: Session, data: CreatePost, author_id: int,image:UploadFile|N
             detail="One or more tags not found",
         )
 
+#image validation and storing 
+
+    validate_image(image)
+
+    image_url = save_image(image)
+
+
     post = Post(
         title=data.title,
         content=data.content,
         author_id=author_id,
         category_id=data.category_id,
-        image_url = str(file_path)
+        image_url = image_url
     )
     post.tags = tags
     db.add(post)

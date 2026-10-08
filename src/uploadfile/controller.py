@@ -1,21 +1,39 @@
 from PIL import Image
-from fastapi import HTTPException
+from pathlib import Path
+from uuid import uuid4
+from fastapi import HTTPException, UploadFile
 
+UPLOAD_DIR = Path("media/post")
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
-def uploadfile(file):
+def validate_image(image: UploadFile):
+    allowed_types = {"image/jpeg", "image/png", "image/webp"}
+
+    if image.content_type not in allowed_types:
+        raise HTTPException(
+            status_code=400,
+            detail="Only JPEG, PNG and WEBP images are allowed",
+        )
+
     try:
-        image = Image.open(file.file)
-        image.verify()
-
+        opened_image = Image.open(image.file)
+        opened_image.verify()
+    
     except Exception:
         raise HTTPException(
             status_code=400,
             detail="Invalid image file"
         )
-
-    return{
-        "filename":file.filename,
-        "content-type":file.content_type,
-        "valid": "valid image"
-    }
     
+    image.file.seek(0)
+
+
+def save_image(image:UploadFile):
+    filename = f"{uuid4().hex}_{image.filename}"
+    file_path = UPLOAD_DIR / filename
+    #store to the media/posts
+    with open(file_path, "wb") as buffer:
+        buffer.write(image.file.read())
+
+    return str(file_path)
+        
