@@ -98,7 +98,7 @@ def get_posts(
 
     return query.offset(skip).limit(limit).all()
 
-
+#get post
 def get_post(db: Session, post_id: int):
     post = db.query(Post).filter(Post.id == post_id).first()
     if post is None:
@@ -106,9 +106,12 @@ def get_post(db: Session, post_id: int):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Post not found",
         )
+    post.views +=1
+    db.commit()
+    db.refresh(post)
     return post
 
-
+#update post
 def update_post(db: Session, post_id: int, data: UpdatePost, user: User,image:UploadFile|None=None):
     post = db.query(Post).filter(Post.id == post_id).first()
     if post is None:
@@ -152,7 +155,7 @@ def update_post(db: Session, post_id: int, data: UpdatePost, user: User,image:Up
         delete_image(old_image_url)
     return post
 
-
+#delete post
 def delete_post(db: Session, post_id: int, user: User):
     post = db.query(Post).filter(Post.id == post_id).first()
     if post is None:

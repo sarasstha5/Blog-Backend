@@ -23,6 +23,7 @@ class PostResponse(BaseModel):
     author_id: int
     category_id: int | None
     tag_ids: list[int]
+    views: int
     created_at: datetime
     updated_at: datetime
 
