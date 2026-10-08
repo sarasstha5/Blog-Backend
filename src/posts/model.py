@@ -37,9 +37,19 @@ class Post(Base):
 
     category = relationship("Category", back_populates="posts")
 
-    comments = relationship("Comment", back_populates="post")
+    comments = relationship(
+        "Comment",
+        back_populates="post",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
-    bookmarks = relationship("Bookmark",back_populates="post")
+    bookmarks = relationship(
+        "Bookmark",
+        back_populates="post",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
     @property
     def tag_ids(self):

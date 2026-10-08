@@ -6,7 +6,9 @@ class Bookmark(Base):
     __tablename__ = "bookmarks"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    post_id = Column(Integer, ForeignKey("posts.id"), nullable=False)
+    post_id = Column(
+        Integer, ForeignKey("posts.id", ondelete="CASCADE"), nullable=False
+    )
 
     post = relationship("Post",back_populates="bookmarks")
 

@@ -9,5 +9,10 @@ post_likes = Table(
     Base.metadata,
 
     Column("user_id", Integer, ForeignKey("users.id"), primary_key=True),
-    Column("post_id", Integer, ForeignKey("posts.id"), primary_key=True),
+    Column(
+        "post_id",
+        Integer,
+        ForeignKey("posts.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
 )

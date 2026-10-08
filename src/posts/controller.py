@@ -142,12 +142,14 @@ def update_post(db: Session, post_id: int, data: UpdatePost, user: User,image:Up
     image_url = post.image_url
     if image:
         image_url = save_image(image)
-        delete_image(old_image_url)
     
     post.image_url = image_url
     
     db.commit()
     db.refresh(post)
+    
+    if image:
+        delete_image(old_image_url)
     return post
 
 
@@ -163,6 +165,7 @@ def delete_post(db: Session, post_id: int, user: User):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You can only delete your own posts",
         )
-    delete_image(post.image_url)
+    image_url = post.image_url
     db.delete(post)
     db.commit()
+    delete_image(image_url)
