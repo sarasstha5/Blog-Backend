@@ -8,7 +8,7 @@ from src.scheme.post import CreatePost, UpdatePost
 from src.tags.model import Tag
 from src.users.model import User
 
-from src.uploadfile.controller import validate_image,save_image
+from src.uploadfile.controller import validate_image,save_image,delete_image
 
 def create_post(db: Session, data: CreatePost, author_id: int,image:UploadFile|None):
 
@@ -109,7 +109,7 @@ def get_post(db: Session, post_id: int):
     return post
 
 
-def update_post(db: Session, post_id: int, data: UpdatePost, user: User):
+def update_post(db: Session, post_id: int, data: UpdatePost, user: User,image:UploadFile|None=None):
     post = db.query(Post).filter(Post.id == post_id).first()
     if post is None:
         raise HTTPException(
@@ -137,6 +137,15 @@ def update_post(db: Session, post_id: int, data: UpdatePost, user: User):
     post.title = data.title
     post.content = data.content
     post.tags = tags
+
+    old_image_url = post.image_url
+    image_url = post.image_url
+    if image:
+        image_url = save_image(image)
+        delete_image(old_image_url)
+    
+    post.image_url = image_url
+    
     db.commit()
     db.refresh(post)
     return post
@@ -154,5 +163,6 @@ def delete_post(db: Session, post_id: int, user: User):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You can only delete your own posts",
         )
+    delete_image(post.image_url)
     db.delete(post)
     db.commit()

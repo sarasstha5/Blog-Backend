@@ -5,7 +5,7 @@ from fastapi import HTTPException, UploadFile
 
 UPLOAD_DIR = Path("media/post")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-
+#validate if it is image
 def validate_image(image: UploadFile):
     allowed_types = {"image/jpeg", "image/png", "image/webp"}
 
@@ -27,13 +27,27 @@ def validate_image(image: UploadFile):
     
     image.file.seek(0)
 
-
+#store image to folder
 def save_image(image:UploadFile):
     filename = f"{uuid4().hex}_{image.filename}"
     file_path = UPLOAD_DIR / filename
     #store to the media/posts
-    with open(file_path, "wb") as buffer:
-        buffer.write(image.file.read())
+    # with open(file_path, "wb") as buffer:
+    #     buffer.write(image.file.read())
+    img = Image.open(image.file)
+    #resize image
+    img.thumbnail((1600, 1600))                 
+    #save to folder
+    img.save(file_path)
 
     return str(file_path)
-        
+
+#delete the image from the folder too
+def delete_image(image_url:str):
+    if not image_url:
+        return
+
+    file_path = Path(image_url)
+
+    if file_path.exists():
+        file_path.unlink()

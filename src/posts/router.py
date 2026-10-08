@@ -47,7 +47,7 @@ def get_posts(
 def get_post(
     post_id: int,
     db: Session = Depends(get_db),
-    _user: User = Depends(verify_token),
+    user: User = Depends(verify_token),
 ):
     return controller.get_post(db, post_id)
 
@@ -55,11 +55,19 @@ def get_post(
 @router.put("/{post_id}", response_model=PostResponse)
 def update_post(
     post_id: int,
-    data: UpdatePost,
+    title: str = Form(...),
+    content: str = Form(...),
+    tag_ids: list[int] = Form(...),
+    image: UploadFile = File(...),
     db: Session = Depends(get_db),
     user: User = Depends(verify_token),
 ):
-    return controller.update_post(db, post_id, data, user)
+    data =UpdatePost(
+        title=title,
+        content=content,
+        tag_ids = tag_ids
+    )
+    return controller.update_post(db, post_id, data, user,image)
 
 
 @router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
