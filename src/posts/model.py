@@ -32,6 +32,7 @@ class Post(Base):
     )
     
     image_url = Column(String, nullable=True)
+    views = Column(Integer, default=0, nullable=False)
 
     tags = relationship("Tag",secondary=post_tags,back_populates="posts")
 
