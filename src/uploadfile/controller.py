@@ -37,8 +37,12 @@ def save_image(image:UploadFile):
     img = Image.open(image.file)
     #resize image
     img.thumbnail((1600, 1600))                 
-    #save to folder
-    img.save(file_path)
+    #compress and save to folder
+    if img.format == "JPEG":
+        img.save(file_path, quality=80, optimize=True)
+
+    elif img.format == "PNG":
+        img.save(file_path, optimize=True)
 
     return str(file_path)
 
