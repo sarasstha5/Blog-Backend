@@ -29,21 +29,18 @@ def validate_image(image: UploadFile):
 
 #store image to folder
 def save_image(image:UploadFile):
-    filename = f"{uuid4().hex}_{image.filename}"
+
+    original_name = Path(image.filename).stem
+    filename = f"{uuid4().hex}_{original_name}.webp"
     file_path = UPLOAD_DIR / filename
-    #store to the media/posts
-    # with open(file_path, "wb") as buffer:
-    #     buffer.write(image.file.read())
+    
     img = Image.open(image.file)
     #resize image
     img.thumbnail((1600, 1600))                 
     #compress and save to folder
-    if img.format == "JPEG":
-        img.save(file_path, quality=80, optimize=True)
+    img.save(file_path,"WEBP",quality=80,optimize=True)
 
-    elif img.format == "PNG":
-        img.save(file_path, optimize=True)
-
+    print("Image size:", img.size)
     return str(file_path)
 
 #delete the image from the folder too
