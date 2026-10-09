@@ -4,9 +4,11 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from src.catogeries.model import Category
 from src.posts.model import Post
-from src.scheme.post import CreatePost, UpdatePost
+from src.scheme.post import CreatePost, PostResponse, UpdatePost
 from src.tags.model import Tag
 from src.users.model import User
+from src.caching import get_cache,set_cache
+from fastapi.encoders import jsonable_encoder
 
 from src.uploadfile.controller import validate_image,save_image,delete_image
 
@@ -66,6 +68,16 @@ def get_posts(
 
     limit = 10
     skip = (page - 1) * limit
+
+    #chaching
+    key = f"search={search}-category={category}-sort_by={sort_by}-tags={tags}-year={year}-page={page}"
+    # 2. Check the cache BEFORE querying the database
+    cache_data = get_cache(key)
+
+    if cache_data is not None:
+        return cache_data
+
+    # 3. Cache miss: run your existing database query
     query = db.query(Post)
     if search:
         pattern = f"%{search}%"
@@ -96,7 +108,13 @@ def get_posts(
                              Post.created_at < end_date)
 
 
-    return query.offset(skip).limit(limit).all()
+    posts = query.offset(skip).limit(limit).all()
+    posts_data = jsonable_encoder(
+        [PostResponse.model_validate(post) for post in posts]
+    )
+    set_cache(key, posts_data)
+
+    return posts
 
 #get post
 def get_post(db: Session, post_id: int):
