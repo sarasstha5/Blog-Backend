@@ -14,8 +14,8 @@ admin_router = APIRouter(
 )
 
 @router.post("/register", response_model=UserResponse)
-def register(user: CreateUser, db: Session = Depends(get_db)):
-    return controller.register(user, db)
+async def register(user: CreateUser, db: Session = Depends(get_db)):
+    return await controller.register(user, db)
 
 @router.post("/login")
 # def login(user: UserLogin, db: Session = Depends(get_db)):

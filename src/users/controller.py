@@ -6,13 +6,13 @@ from src.scheme.user import CreateUser
 from src.auth.security import hash_password, verify_password , create_access_token
 from src.posts.model import Post
 from fastapi.security import OAuth2PasswordRequestForm
+from src.mail import send_email
 
 
 app = FastAPI()
 
 #register
-def register(user: CreateUser, db: Session):
-
+async def register(user: CreateUser, db: Session):
     hashed_password = hash_password(user.password)
     new_user = User(
         name=user.name,
@@ -24,8 +24,9 @@ def register(user: CreateUser, db: Session):
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-
     db.close()
+
+    await send_email(user.email)
 
     return new_user
 

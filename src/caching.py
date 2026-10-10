@@ -1,7 +1,6 @@
 import time 
 
 cache = {}
-last_fetch = 0
 
 def get_cache(key:str|None):
     if key not in cache:
@@ -18,3 +17,4 @@ def get_cache(key:str|None):
 
 def set_cache(key: str, data):
     cache[key] = (data, time.time())
+    
