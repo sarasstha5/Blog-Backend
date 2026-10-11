@@ -7,12 +7,16 @@ from src.auth.security import hash_password, verify_password , create_access_tok
 from src.posts.model import Post
 from fastapi.security import OAuth2PasswordRequestForm
 from src.mail import send_email
+from sqlalchemy.exc import IntegrityError
 
 
 app = FastAPI()
 
 #register
-async def register(user: CreateUser, db: Session):
+def register(user: CreateUser, db: Session, background_tasks):
+    if db.query(User).filter(User.email == user.email).first() is not None:
+        raise HTTPException(status_code=409, detail="Email is already registered")
+
     hashed_password = hash_password(user.password)
     new_user = User(
         name=user.name,
@@ -22,11 +26,21 @@ async def register(user: CreateUser, db: Session):
     )
 
     db.add(new_user)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        if db.query(User).filter(User.email == user.email).first() is not None:
+            raise HTTPException(
+                status_code=409,
+                detail="Email is already registered",
+            )
+        raise
+
     db.refresh(new_user)
     db.close()
 
-    await send_email(user.email)
+    background_tasks.add_task(send_email, user.email)
 
     return new_user
 

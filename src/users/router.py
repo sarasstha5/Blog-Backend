@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, Response, status, BackgroundTasks
 from sqlalchemy.orm import Session
 from src.auth.security import require_admin
 from src.scheme.user import UserResponse, CreateUser
 from src.db.connection import get_db
 from src.users import controller
 from fastapi.security import OAuth2PasswordRequestForm
+
 
 router = APIRouter(prefix="/users")
 admin_router = APIRouter(
@@ -14,8 +15,12 @@ admin_router = APIRouter(
 )
 
 @router.post("/register", response_model=UserResponse)
-async def register(user: CreateUser, db: Session = Depends(get_db)):
-    return await controller.register(user, db)
+def register(
+    user: CreateUser,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+):
+    return controller.register(user, db, background_tasks)
 
 @router.post("/login")
 # def login(user: UserLogin, db: Session = Depends(get_db)):
